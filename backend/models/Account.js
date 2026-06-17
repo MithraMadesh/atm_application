@@ -1,20 +1,25 @@
-const mongoose=require("mongoose");
-const accountSchema=new mongoose.Schema({
-    name:{
-        type:String,
-        required:true,
-    },
-    accountNumber:{
-        type:String,
-        required:true,
-    },
-    pin:{
-        type:String,
-        required:true,
-    },
-    balance:{
-        type:Number,
-        default:0,
-    },
+const mongoose = require("mongoose");
+
+const accountSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  accountNumber: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+  },
+  pin: {
+    type: String,
+    required: true,
+  },
+  balance: {
+    type: Number,
+    default: 0,
+  },
 });
-module.exports=mongoose.model("Account",accountSchema);
+
+module.exports = mongoose.model("Account", accountSchema);

@@ -10,12 +10,20 @@ connectDB();
 
 const app = express();
 
-app.use(cors(
-  {
-    orgin:""
-  }
-));
+const allowedOrigins = process.env.CLIENT_URL
+  ? process.env.CLIENT_URL.split(",")
+  : ["http://localhost:5173"];
+
+app.use(
+  cors({
+    origin: allowedOrigins,
+    credentials: true,
+  })
+);
+
 app.use(express.json());
+
+app.use("/api/atm", require("./routes/atmRoutes"));
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -24,8 +32,7 @@ app.use((err, req, res, next) => {
     message: err.message,
   });
 });
-app.use("/api/atm", require("./routes/atmRoutes"));
 
 app.listen(process.env.PORT || 5000, () => {
-  console.log("Server Running");
+  console.log("Server Running on port", process.env.PORT || 5000);
 });

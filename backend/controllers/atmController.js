@@ -4,6 +4,12 @@ const signup = async (req, res) => {
   try {
     const { name, accountNumber, pin } = req.body;
 
+    if (!name || !accountNumber || !pin) {
+      return res.status(400).json({
+        message: "Name, account number and pin are required",
+      });
+    }
+
     const existingUser = await Account.findOne({
       accountNumber,
     });
@@ -21,9 +27,12 @@ const signup = async (req, res) => {
       balance: 0,
     });
 
+    const accountData = account.toObject();
+    delete accountData.pin;
+
     res.status(201).json({
       message: "Account created successfully",
-      account,
+      account: accountData,
     });
   } catch (error) {
     console.log(error);
@@ -48,7 +57,10 @@ const login = async (req, res) => {
       });
     }
 
-    res.json(account);
+    const accountData = account.toObject();
+    delete accountData.pin;
+
+    res.json(accountData);
   } catch (error) {
     console.log(error);
 
@@ -87,6 +99,13 @@ const checkBalance = async (req, res) => {
 const deposit = async (req, res) => {
   try {
     const { accountNumber, amount } = req.body;
+    const amountNum = Number(amount);
+
+    if (!amount || isNaN(amountNum) || amountNum <= 0) {
+      return res.status(400).json({
+        message: "Enter a valid deposit amount",
+      });
+    }
 
     const account = await Account.findOne({ accountNumber });
 
@@ -96,7 +115,7 @@ const deposit = async (req, res) => {
       });
     }
 
-    account.balance += Number(amount);
+    account.balance += amountNum;
 
     await account.save();
 
@@ -114,6 +133,13 @@ const deposit = async (req, res) => {
 const withdraw = async (req, res) => {
   try {
     const { accountNumber, amount } = req.body;
+    const amountNum = Number(amount);
+
+    if (!amount || isNaN(amountNum) || amountNum <= 0) {
+      return res.status(400).json({
+        message: "Enter a valid withdrawal amount",
+      });
+    }
 
     const account = await Account.findOne({ accountNumber });
 
@@ -123,13 +149,13 @@ const withdraw = async (req, res) => {
       });
     }
 
-    if (account.balance < amount) {
+    if (account.balance < amountNum) {
       return res.status(400).json({
         message: "Insufficient balance",
       });
     }
 
-    account.balance -= Number(amount);
+    account.balance -= amountNum;
 
     await account.save();
 

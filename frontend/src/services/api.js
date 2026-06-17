@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API = "https://atm-application-4.onrender.com/api/atm";
+const API =
+  import.meta.env.VITE_API_URL ||
+  "https://atm-application-4.onrender.com/api/atm";
 
 export const signup = (data) => {
   return axios.post(`${API}/signup`, data);
@@ -12,7 +14,6 @@ export const login = (accountNumber, pin) => {
     pin,
   });
 };
-
 
 export const getBalance = async (accountNumber) => {
   return axios.get(`${API}/balance/${accountNumber}`);
